@@ -1,19 +1,65 @@
-# Image Description Generator
+<h1 align="center">Styler<span style="color: #00f2fe;">.AI</span></h1>
 
-A simple web application that generates descriptions for uploaded images.
-![SCIPG](ScreenshotIDG.png)
-## Features
+<p align="center">
+  <b>تفكيك الصور وتوليد برومبت الأسلوب والوضعية بدقة متناهية // Lite Dual Prompt Studio</b><br>
+  <sub>واجهة شاشة كاملة فائقة البساطة والخفة (Non-scrollable, Containerless &amp; No Appbar)</sub>
+</p>
 
-- Upload any image file (JPG, PNG, etc.)
-- Get the description for the image (functionality to be implemented in script.js)
+---
 
-## How to Use
+تطبيق ويب فائق البساطة والسرعة (**Lite & Containerless**) ذو واجهة شاشة كاملة غير قابلة للتمرير وبدون شريط علوي (**No Appbar, No Containers, Non-scrollable 100vh**)، يركز بشكل نقي ومباشر على تفكيك الصور وتوليد **جزأين رئيسيين للبرومبت**:
 
-1. Open `index.html`
-2. Click "Choose Image" to select an image file
-3. Click "Get Description" and then you need to enter your API
-4. Open [aistudio](https://aistudio.google.com/) to get your own API
+1. **الجزء الأول: البرومبت العام للأسلوب والتصوير (Abstract General Style Prompt)**
+   - يركز على الوسط الفني، نمط الصورة، زاوية الكاميرا والعدسة، الإضاءة، الأجواء، والظلال.
+   - يعزل ويتجاهل المنتج ذاته تماماً ونصوصه وألوانه المحددة، ويضع مكانه خانة عامة `[SUBJECT / PRODUCT]` لتتمكن من استخدام نفس النمط لأي منتجات تجارية أخرى مختلفة.
 
-## Developer
+2. **الجزء الثاني: وضعية الشخص، الملابس، وتفاصيل المشهد (Pose, Clothes & Scene Prompt)**
+   - يركز على حركة ووضعية الجسد (Pose & Action)، وتفاصيل قطع الملابس والأقمشة والخامات، وتفاصيل البيئة المحيطة والأسطح.
+   - يعزل ويتجاهل تماماً ملامح الوجه وشكل الجسد لإتاحة التوليد لأي شخصية دون قيود.
 
-Developed by [DangerousAngel](https://linktr.ee/DangerousAngel)
+---
+
+## تدفق الخطوات البسيط (Lite 3-Step Flow)
+
+1. **الخطوة 01: استيراد الصورة (Upload)**
+   - مساحة إفلات بسيطة ونظيفة تدعم السحب والإفلات، التصفح، واللصق المباشر (`Ctrl+V`).
+   - معاينة نظيفة بدون إطارات ضخمة، مع زر انطلاق مباشر: "تفكيك واستخراج العناصر البصرية".
+
+2. **الخطوة 02: العناصر المرصودة والتخصيص (Observed Fields)**
+   - تفكيك فوري إلى 8 حقول نقية بدون صناديق متداخلة:
+     - الوسط والأسلوب الفني (Medium & Style)
+     - زاوية العدسة والتأطير (Optics & Shot)
+     - الإضاءة والجو المحيط (Lighting & Mood)
+     - وضعية الشخص والحركة (Pose & Action) *(معزولة الملامح والجسد)*
+     - الملابس والأزياء (Clothing & Fabrics)
+     - المنتج أو العنصر (Product & Object) *(يمكن كتابة null لتجاهله)*
+     - الخلفية والبيئة المحيطة (Background & Scenery)
+     - تفاصيل إضافية وخامات (Atmospheric Textures)
+   - كل حقل يمكن تعديله أو تركه فارغاً للاعتماد على مرجع الصورة، مع زر استعادة للمرجع الأصلي.
+
+3. **الخطوة 03: البرومبت المزدوج (Dual Prompts Studio)**
+   - عرض جانبي مباشر ومقروء للجزء الأول والجزء الثاني مع أزرار نسخ فورية (Copy).
+   - سطر برومبت الاستبعاد المتخصص (Negative Prompt) وباليت الألوان المستخرجة (Hex).
+   - أزرار سريعة للعودة للتعديل أو استيراد صورة جديدة.
+
+---
+
+## إعداد مفتاح الـ API
+
+التطبيق يتصل عبر بوابة **OpenRouter AI Gateway**. لإضافة مفتاحك الخاص:
+- انقر على أيقونة الإعدادات ⚙️ في الزاوية السفلية من الواجهة.
+- أدخل مفتاح OpenRouter الخاص بك (`sk-or-v1-...`)، وسيتم حفظه محلياً في متصفحك بشكل آمن (`localStorage`).
+
+---
+
+## التشغيل المحلي
+
+```bash
+# تشغيل خادم محلي
+python -m http.server 3000
+```
+ثم افتح المتصفح على: `http://localhost:3000`
+
+---
+
+تطوير: [DangerousAngel](https://linktr.ee/DangerousAngel)

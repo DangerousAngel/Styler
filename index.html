@@ -1,30 +1,329 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Description Generator</title>
+    <title>Styler AI</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for minimal icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="container">
-        <h1>Image Description Generator</h1>
-		<p style="color: #4a90e2;font-family: system-ui;">Developed by <a href="https://linktr.ee/DangerousAngel" class="angel">DangerousAngel</a></p><br><br>
-		
-        <div class="upload-section">
-            <label for="imageUpload" class="upload-button">Choose Image</label>
-            <input type="file" id="imageUpload" accept="image/*" class="hidden-input">
-            <span id="fileNameDisplay" class="file-name-display">No file chosen</span>
-        </div>
-        <div class="image-preview-container">
-            <img id="imagePreview" src="#" alt="Image Preview" class="image-preview">
-        </div>
-        <button id="identifyButton" class="action-button" disabled>Get Description</button>
-        <div class="description-output">
-            <h2>Description:</h2>
-            <p id="description" class="description-text">Upload an image to get started.</p>
+<body class="lite-body">
+
+    <!-- Minimal Step Indicator (Simple Floating Dots) -->
+    <div class="lite-stepper">
+        <button class="step-dot active" id="dot-1" data-step="1">01 استيراد</button>
+        <span class="step-separator"></span>
+        <button class="step-dot disabled" id="dot-2" data-step="2">02 العناصر</button>
+        <span class="step-separator"></span>
+        <button class="step-dot disabled" id="dot-3" data-step="3">03 البرومبت المزدوج</button>
+    </div>
+
+    <!-- Non-Scrollable Step Viewport -->
+    <main id="step-viewport" class="lite-viewport">
+
+        <!-- ===============================================================
+             STEP 1: SIMPLE LITE UPLOAD
+             =============================================================== -->
+        <section id="step-1" class="step-view active-step" data-step-index="1">
+            <div class="step-content center-content">
+                
+                <div class="brand-minimal">
+                    <h1 class="brand-title">Styler<span class="accent">.AI</span></h1>
+                    <p class="brand-subtitle">تفكيك الصور وتوليد برومبت الأسلوب والوضعية بدقة متناهية</p>
+                </div>
+
+                <!-- Simple Dropzone (No Bulky Containers) -->
+                <div id="dropzone" class="lite-dropzone">
+                    <input type="file" id="file-input" accept="image/*" class="file-hidden">
+                    
+                    <div id="dropzone-empty" class="dropzone-empty-state">
+                        <div class="upload-icon-circle">
+                            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                        </div>
+                        <h2 class="upload-heading">اسحب وأفلت الصورة هنا أو <span class="browse-action">تصفح ملفاتك</span></h2>
+                        <p class="upload-hint">يدعم JPG, PNG, WEBP &bull; تفكيك ذكي لعناصر الصورة</p>
+                    </div>
+
+                    <div id="dropzone-preview" class="dropzone-preview-state hidden">
+                        <div class="image-preview-frame">
+                            <img id="preview-img" src="#" alt="صورة الإدخال" class="preview-img">
+                            <button type="button" id="change-image-btn" class="lite-btn-change" title="تغيير الصورة">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                                <span>تغيير</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simple Primary CTA -->
+                <div class="step-action-row">
+                    <button type="button" id="analyze-btn" class="lite-btn-primary" disabled>
+                        <span class="btn-spinner hidden" id="analyze-spinner"></span>
+                        <span id="analyze-btn-text">اختر صورة لبدء التفكيك</span>
+                        <i class="fa-solid fa-arrow-left" id="analyze-arrow"></i>
+                    </button>
+                </div>
+
+                <div id="error-banner" class="lite-error hidden">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span id="error-message">حدث خطأ</span>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ===============================================================
+             STEP 2: SIMPLE OBSERVED FIELDS
+             =============================================================== -->
+        <section id="step-2" class="step-view" data-step-index="2">
+            <div class="step-content fields-content">
+                
+                <div class="step-header-simple">
+                    <div class="header-titles">
+                        <h2 class="section-title">العناصر المرصودة من الصورة</h2>
+                        <p class="section-desc">عدّل أي قيمة، أو اترك الحقل فارغاً للاعتماد تلقائياً على مرجع الصورة الأصلي</p>
+                    </div>
+                    <div class="header-controls">
+                        <button type="button" id="reset-all-btn" class="lite-btn-subtle" title="استعادة كافة القيم المرصودة">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>استعادة المرجع الأصلي</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Seamless Fields Grid (No Heavy Containers) -->
+                <div class="lite-fields-grid" id="fields-grid">
+                    
+                    <!-- 1. Style & Medium -->
+                    <div class="lite-field-item">
+                        <div class="field-meta">
+                            <label class="field-label" for="field-style">
+                                <i class="fa-solid fa-paintbrush"></i>
+                                <span>الوسط والأسلوب الفني (Medium &amp; Style)</span>
+                            </label>
+                            <button type="button" class="field-reset-link" data-field="style">استعادة</button>
+                        </div>
+                        <textarea id="field-style" class="lite-input" rows="2" placeholder="المرجع الافتراضي..."></textarea>
+                    </div>
+
+                    <!-- 2. Optics & Framing -->
+                    <div class="lite-field-item">
+                        <div class="field-meta">
+                            <label class="field-label" for="field-optics">
+                                <i class="fa-solid fa-camera"></i>
+                                <span>زاوية العدسة والتأطير (Optics &amp; Shot)</span>
+                            </label>
+                            <button type="button" class="field-reset-link" data-field="optics">استعادة</button>
+                        </div>
+                        <textarea id="field-optics" class="lite-input" rows="2" placeholder="المرجع الافتراضي..."></textarea>
+                    </div>
+
+                    <!-- 3. Lighting & Mood -->
+                    <div class="lite-field-item">
+                        <div class="field-meta">
+                            <label class="field-label" for="field-lighting">
+                                <i class="fa-solid fa-sun"></i>
+                                <span>الإضاءة والجو المحيط (Lighting &amp; Mood)</span>
+                            </label>
+                            <button type="button" class="field-reset-link" data-field="lighting">استعادة</button>
+                        </div>
+                        <textarea id="field-lighting" class="lite-input" rows="2" placeholder="المرجع الافتراضي..."></textarea>
+                    </div>
+
+                    <!-- 4. Person Pose & Action (NO FACE / NO BODY SHAPE) -->
+                    <div class="lite-field-item accent-item">
+                        <div class="field-meta">
+                            <label class="field-label" for="field-pose">
+                                <i class="fa-solid fa-person-running"></i>
+                                <span>وضعية الشخص والحركة (Pose &amp; Action)</span>
+                                <span class="tag-neutral">بدون ملامح أو شكل جسد</span>
+                            </label>
+                            <button type="button" class="field-reset-link" data-field="pose">استعادة</button>
+                        </div>
+                        <textarea id="field-pose" class="lite-input" rows="2" placeholder="المرجع الافتراضي..."></textarea>
+                    </div>
+
+                    <!-- 5. Clothes & Fashion Styling -->
+                    <div class="lite-field-item accent-item">
+                        <div class="field-meta">
+                            <label class="field-label" for="field-clothes">
+                                <i class="fa-solid fa-shirt"></i>
+                                <span>الملابس والأزياء والأقمشة (Clothing &amp; Fabrics)</span>
+                            </label>
+                            <button type="button" class="field-reset-link" data-field="clothes">استعادة</button>
+                        </div>
+                        <textarea id="field-clothes" class="lite-input" rows="2" placeholder="المرجع الافتراضي..."></textarea>
+                    </div>
+
+                    <!-- 6. Product & Objects -->
+                    <div class="lite-field-item">
+                        <div class="field-meta">
+                            <label class="field-label" for="field-product">
+                                <i class="fa-solid fa-box-open"></i>
+                                <span>المنتج أو العنصر الرئيسي (Product &amp; Object)</span>
+                                <span class="tag-dim">يمكن كتابة null لتجاهله</span>
+                            </label>
+                            <button type="button" class="field-reset-link" data-field="product">استعادة</button>
+                        </div>
+                        <textarea id="field-product" class="lite-input" rows="2" placeholder="المرجع الافتراضي..."></textarea>
+                    </div>
+
+                    <!-- 7. Background & Environment -->
+                    <div class="lite-field-item">
+                        <div class="field-meta">
+                            <label class="field-label" for="field-background">
+                                <i class="fa-solid fa-mountain-sun"></i>
+                                <span>الخلفية والبيئة المحيطة (Background &amp; Scenery)</span>
+                            </label>
+                            <button type="button" class="field-reset-link" data-field="background">استعادة</button>
+                        </div>
+                        <textarea id="field-background" class="lite-input" rows="2" placeholder="المرجع الافتراضي..."></textarea>
+                    </div>
+
+                    <!-- 8. Other Details & Textures -->
+                    <div class="lite-field-item">
+                        <div class="field-meta">
+                            <label class="field-label" for="field-details">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>تفاصيل إضافية وخامات (Atmospheric Textures)</span>
+                            </label>
+                            <button type="button" class="field-reset-link" data-field="details">استعادة</button>
+                        </div>
+                        <textarea id="field-details" class="lite-input" rows="2" placeholder="المرجع الافتراضي..."></textarea>
+                    </div>
+
+                </div>
+
+                <!-- Footer Navigation -->
+                <div class="fields-footer-nav">
+                    <button type="button" id="back-to-1-btn" class="lite-btn-secondary">
+                        <i class="fa-solid fa-arrow-right"></i>
+                        <span>العودة للصورة</span>
+                    </button>
+                    <button type="button" id="generate-prompts-btn" class="lite-btn-primary">
+                        <span class="btn-spinner hidden" id="generate-spinner"></span>
+                        <span id="generate-btn-text">توليد البرومبت المزدوج</span>
+                        <i class="fa-solid fa-arrow-left" id="generate-arrow"></i>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ===============================================================
+             STEP 3: DUAL MASTER PROMPTS (THE TWO MAIN PARTS)
+             =============================================================== -->
+        <section id="step-3" class="step-view" data-step-index="3">
+            <div class="step-content prompts-content">
+                
+                <div class="step-header-simple">
+                    <div class="header-titles">
+                        <h2 class="section-title">البرومبت المزدوج جاهز</h2>
+                        <p class="section-desc">تم التوليد وفق القواعد المحددة: الجزء الأول مجرد لأي منتج، والجزء الثاني يعزل ملامح الوجه والجسد</p>
+                    </div>
+                    <div class="header-controls">
+                        <button type="button" id="edit-fields-btn" class="lite-btn-subtle">
+                            <i class="fa-solid fa-sliders"></i>
+                            <span>تعديل العناصر</span>
+                        </button>
+                        <button type="button" id="new-image-btn" class="lite-btn-subtle">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>صورة جديدة</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Two Main Parts (Seamless Side-by-Side Presentation) -->
+                <div class="lite-dual-prompts">
+                    
+                    <!-- PART 1: ABSTRACT GENERAL STYLE -->
+                    <div class="prompt-column part1-col">
+                        <div class="prompt-col-header">
+                            <div>
+                                <span class="part-number">01</span>
+                                <h3 class="part-heading">البرومبت العام للأسلوب والتصوير (Abstract General Style)</h3>
+                                <p class="part-subtext">يركز على النمط والعدسة والإضاءة &bull; مجرد تماماً لأي منتج بدون نصوص أو ألوان محددة</p>
+                            </div>
+                            <button type="button" id="copy-part1-btn" class="lite-btn-copy" title="نسخ البرومبت الأول">
+                                <i class="fa-regular fa-copy"></i>
+                                <span>نسخ</span>
+                            </button>
+                        </div>
+                        <div class="prompt-text-box">
+                            <p id="prompt-part1-text" class="prompt-text">جاري التحضير...</p>
+                        </div>
+                    </div>
+
+                    <!-- PART 2: CHARACTER POSE, CLOTHES & SCENE -->
+                    <div class="prompt-column part2-col">
+                        <div class="prompt-col-header">
+                            <div>
+                                <span class="part-number accent">02</span>
+                                <h3 class="part-heading">وضعية الشخص والملابس والخلفية (Pose, Clothes &amp; Scene)</h3>
+                                <p class="part-subtext">يركز على حركة الجسد ونوع الأقمشة والمحيط &bull; معزول تماماً عن ملامح الوجه وشكل الجسد</p>
+                            </div>
+                            <button type="button" id="copy-part2-btn" class="lite-btn-copy" title="نسخ البرومبت الثاني">
+                                <i class="fa-regular fa-copy"></i>
+                                <span>نسخ</span>
+                            </button>
+                        </div>
+                        <div class="prompt-text-box">
+                            <p id="prompt-part2-text" class="prompt-text">جاري التحضير...</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Minimal Bottom Bar: Negative Prompt & Swatches -->
+                <div class="lite-bottom-bar">
+                    <div class="negative-inline">
+                        <span class="neg-label"><i class="fa-solid fa-ban"></i> استبعاد:</span>
+                        <span id="negative-text" class="neg-content">text, watermark, deformed face, bad anatomy</span>
+                        <button type="button" id="copy-neg-btn" class="neg-copy-btn" title="نسخ برومبت الاستبعاد">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+
+                    <div class="palette-inline" id="palette-inline">
+                        <!-- Populated dynamically with hex swatches -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Discrete Bottom-Corner Settings Trigger -->
+    <button type="button" id="open-settings-btn" class="lite-settings-trigger" title="إعدادات الـ API">
+        <i class="fa-solid fa-gear"></i>
+    </button>
+
+    <!-- Discrete Minimal API Modal -->
+    <div id="settings-modal" class="lite-modal hidden">
+        <div class="lite-modal-card">
+            <div class="modal-top">
+                <h4>إعدادات OpenRouter API</h4>
+                <button type="button" id="close-settings-btn" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-field">
+                <label for="api-key-input">API Key:</label>
+                <input type="password" id="api-key-input" placeholder="sk-or-v1-..." value="">
+            </div>
+            <button type="button" id="save-settings-btn" class="lite-btn-primary" style="margin-top: 12px; width: 100%;">
+                حفظ
+            </button>
         </div>
     </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
     <script src="script.js"></script>
 </body>
 </html>
